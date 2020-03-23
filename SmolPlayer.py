@@ -27,6 +27,7 @@ class SmolPlayer():
         self.run = True
         self.threadLock = threading.Lock()
         self.window = tkinter.Tk()
+        self.window.iconbitmap("assets/appicon.ico")
         self.window.title('HawtMusic')
         self.window.configure(background = '#323740')
         self.width, self.height = self.window.winfo_screenwidth(), self.window.winfo_screenheight()
