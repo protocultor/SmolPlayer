@@ -23,49 +23,49 @@ class SmolPlayer():
         self.nowPlaying = ''
         self.songPosition = 0
         self.player = ''
-        self.volume = 50
+        self.volume = 42
         self.run = True
         self.threadLock = threading.Lock()
         self.window = tkinter.Tk()
-        self.window.title('SmolPlayer')
-        self.window.configure(background = 'black')
+        self.window.title('HawtMusic')
+        self.window.configure(background = '#323740')
         self.width, self.height = self.window.winfo_screenwidth(), self.window.winfo_screenheight()
         self.window.geometry('%dx%d+%d+%d' % (775, 500, self.width // 2 - 400, self.height // 2 - 340))
         self.window.resizable(False, False)
 
-        playImage = tkinter.PhotoImage(file='assets\play.png')
-        pauseImage = tkinter.PhotoImage(file='assets\pause.png')
-        skipImage = tkinter.PhotoImage(file='assets\skip.png')
-        shuffleImage = tkinter.PhotoImage(file='assets\shuffle.png')
+        playImage = tkinter.PhotoImage(file='assets/play.png')
+        pauseImage = tkinter.PhotoImage(file='assets/pause.png')
+        skipImage = tkinter.PhotoImage(file='assets/skip.png')
+        shuffleImage = tkinter.PhotoImage(file='assets/shuffle.png')
 
-        tkinter.Button(self.window, image = pauseImage, bg='black', relief = 'flat', command = self.pause).place(x=300,y=10)
-        tkinter.Button(self.window, text = 'Add', width=5, command = self.add).place(x=685,y=120)
+        tkinter.Button(self.window, image = pauseImage, bg='#323740', relief = 'flat', command = self.pause).place(x=300,y=10)
+        tkinter.Button(self.window, text = 'Add', bg='blue', width=5, command = self.add).place(x=685,y=120)
         #tkinter.Button(self.window, text = 'Clear', width=10, command = self.clear).place(x=380,y=5)
 
-        self.playButton = tkinter.Button(self.window, image = playImage, bg='black', relief = 'flat', command = self.start)
+        self.playButton = tkinter.Button(self.window, image = playImage, bg='#323740', relief = 'flat', command = self.start)
         self.playButton.place(x=240,y=10)
-        self.skipButton = tkinter.Button(self.window, image = skipImage, bg='black', relief = 'flat', command = self.skip)
+        self.skipButton = tkinter.Button(self.window, image = skipImage, bg='#323740', relief = 'flat', command = self.skip)
         self.skipButton.place(x=360,y=10)
-        self.shuffleButton = tkinter.Button(self.window, image = shuffleImage, bg='black', relief = 'flat', command = self.shuffle)
+        self.shuffleButton = tkinter.Button(self.window, image = shuffleImage, bg='#323740', relief = 'flat', command = self.shuffle)
         self.shuffleButton.place(x=420,y=10)
         self.nextButton = tkinter.Button(self.window, text = 'Next', width=5, command = self.add_next)
         self.nextButton.place(x=685,y=150)
         self.deleteButton = tkinter.Button(self.window, text = 'Delete', width=5, command = self.delete_song)
         self.deleteButton.place(x=685,y=180)
-        self.volumeScale = tkinter.Scale(self.window, from_=100, to=0, orient='vertical', bg = 'black', fg = 'pink', borderwidth=0, highlightbackground='black', length=242, command= self.set_volume)
+        self.volumeScale = tkinter.Scale(self.window, from_=100, to=0, orient='vertical', bg = '#323740', fg = 'white', borderwidth=0, highlightbackground='#323740', length=242, command= self.set_volume)
         self.volumeScale.place(x=690,y=210)
-        self.volumeScale.set(50)
-        self.musicScrubber = tkinter.Scale(self.window, from_=0.0, to=1.0, resolution=0.0001, orient='horizontal', bg='black', width=5, fg = 'black', borderwidth=0, highlightbackground='black', length=634)
+        self.volumeScale.set(self.volume)
+        self.musicScrubber = tkinter.Scale(self.window, from_=0.0, to=1.0, resolution=0.0001, orient='horizontal', bg='#323740', width=5, fg = '#323740', borderwidth=0, highlightbackground='#323740', length=634)
         self.musicScrubber.place(x=38,y=85)
-        self.queueBox = tkinter.Listbox(self.window, width=105, height=20, font = ("Ariel", 8))
+        self.queueBox = tkinter.Listbox(self.window, width=79, height=20, font = ("Ariel", 12))
         self.queueBox.place(x=40,y=150)
-        self.urlEntry = tkinter.Entry(self.window, width=105, font = ("Ariel", 8))
+        self.urlEntry = tkinter.Entry(self.window, width=78, font = ("Ariel", 12))
         self.urlEntry.place(x=40,y=120)
-        self.nowPlayingLabel = tkinter.Label(self.window, text = 'Now Playing:', bg = 'black', fg = 'pink', font = ("Ariel", 8))
+        self.nowPlayingLabel = tkinter.Label(self.window, text = 'Now Playing:', bg = '#323740', fg = 'white', font = ("Ariel", 12))
         self.nowPlayingLabel.place(x=37, y=80)
-        self.durationLabel = tkinter.Label(self.window, text = '00:00:00', bg = 'black', fg = 'pink', font = ("Ariel", 8))
+        self.durationLabel = tkinter.Label(self.window, text = '00:00:00', bg = '#323740', fg = 'pink', font = ("Ariel", 12))
         self.durationLabel.place(x=630,y=80)
-        self.timeLabel = tkinter.Label(self.window, text = '00:00:00 /', bg = 'black', fg = 'pink', font = ("Ariel", 8))
+        self.timeLabel = tkinter.Label(self.window, text = '00:00:00 /', bg = '#323740', fg = 'pink', font = ("Ariel", 12))
         self.timeLabel.place(x=580,y=80)
 
         self.musicScrubber.bind('<ButtonRelease-1>', lambda x: self.set_scrubber(self.musicScrubber.get()))
@@ -137,12 +137,12 @@ class SmolPlayer():
                 self.songPosition = ticker * 3
                 self.musicScrubber.set(ticker * 3)
                 while self.player.get_state() == State.Playing or self.player.get_state() == State.Paused:
-                    if self.paused == False:
+                    if not self.paused:
                         self.songPosition += ticker
                         self.musicScrubber.set(self.songPosition)
                         self.get_time()
                         time.sleep(1)
-                    if self.run == False:
+                    if not self.run:
                         self.player.stop()
                         sys.exit()
                 self.songPosition = 0
@@ -398,4 +398,14 @@ class SmolPlayer():
             self.window.destroy()
 
 if __name__ == '__main__':
+    try:
+        playlist = sys.argv[1]
+        plFile = open(playlist, 'r')
+        songFile = open('songlist.txt', 'w')
+        content = plFile.read()
+        songFile.write(content)
+        plFile.close()
+        songFile.close()
+    except:
+        pass # Not a real issue
     SmolPlayer()
