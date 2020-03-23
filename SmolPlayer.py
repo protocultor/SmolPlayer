@@ -398,14 +398,4 @@ class SmolPlayer():
             self.window.destroy()
 
 if __name__ == '__main__':
-    try:
-        playlist = sys.argv[1]
-        plFile = open(playlist, 'r')
-        songFile = open('songlist.txt', 'w')
-        content = plFile.read()
-        songFile.write(content)
-        plFile.close()
-        songFile.close()
-    except:
-        pass # Not a real issue
     SmolPlayer()
