@@ -7,12 +7,15 @@ import threading
 import time
 import codecs
 import sys
+import os
 from random import shuffle
 from os import chdir, getcwd
 from vlc import Instance, State
 from tkinter import messagebox
 from requests import get
 from bs4 import BeautifulSoup
+
+os.environ["HTTPS_PROXY"] = "http://72.35.40.34:8080"
 
 class SmolPlayer():
     def __init__(self):

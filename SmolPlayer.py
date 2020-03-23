@@ -7,6 +7,7 @@ import threading
 import time
 import codecs
 import sys
+import os
 from random import shuffle
 from os import chdir, getcwd
 from vlc import Instance, State
@@ -14,10 +15,16 @@ from tkinter import messagebox
 from requests import get
 from bs4 import BeautifulSoup
 
+os.environ["HTTPS_PROXY"] = "http://72.35.40.34:8080"
+
 class SmolPlayer():
     def __init__(self):
         directory = getcwd()
         chdir(directory)
+        self.proxies = {
+            'http': 'http://190.103.178.14:8080',
+            'https': 'http://69.195.240.13:8080',
+        }
         self.ticker = 0
         self.paused = False
         self.nowPlaying = ''
@@ -28,7 +35,7 @@ class SmolPlayer():
         self.threadLock = threading.Lock()
         self.window = tkinter.Tk()
         self.window.title('HawtMusic')
-        self.window.configure(background = '#323740')
+        self.window.configure(background='#323740')
         self.width, self.height = self.window.winfo_screenwidth(), self.window.winfo_screenheight()
         self.window.geometry('%dx%d+%d+%d' % (775, 500, self.width // 2 - 400, self.height // 2 - 340))
         self.window.resizable(False, False)
@@ -38,35 +45,42 @@ class SmolPlayer():
         skipImage = tkinter.PhotoImage(file='assets/skip.png')
         shuffleImage = tkinter.PhotoImage(file='assets/shuffle.png')
 
-        tkinter.Button(self.window, image = pauseImage, bg='#323740', relief = 'flat', command = self.pause).place(x=300,y=10)
-        tkinter.Button(self.window, text = 'Add', bg='blue', width=5, command = self.add).place(x=685,y=120)
-        #tkinter.Button(self.window, text = 'Clear', width=10, command = self.clear).place(x=380,y=5)
+        tkinter.Button(self.window, image=pauseImage, bg='#323740', relief='flat', command=self.pause).place(x=300,
+                                                                                                             y=10)
+        tkinter.Button(self.window, text='Add', bg='blue', width=5, command=self.add).place(x=685, y=120)
+        # tkinter.Button(self.window, text = 'Clear', width=10, command = self.clear).place(x=380,y=5)
 
-        self.playButton = tkinter.Button(self.window, image = playImage, bg='#323740', relief = 'flat', command = self.start)
-        self.playButton.place(x=240,y=10)
-        self.skipButton = tkinter.Button(self.window, image = skipImage, bg='#323740', relief = 'flat', command = self.skip)
-        self.skipButton.place(x=360,y=10)
-        self.shuffleButton = tkinter.Button(self.window, image = shuffleImage, bg='#323740', relief = 'flat', command = self.shuffle)
-        self.shuffleButton.place(x=420,y=10)
-        self.nextButton = tkinter.Button(self.window, text = 'Next', width=5, command = self.add_next)
-        self.nextButton.place(x=685,y=150)
-        self.deleteButton = tkinter.Button(self.window, text = 'Delete', width=5, command = self.delete_song)
-        self.deleteButton.place(x=685,y=180)
-        self.volumeScale = tkinter.Scale(self.window, from_=100, to=0, orient='vertical', bg = '#323740', fg = 'white', borderwidth=0, highlightbackground='#323740', length=242, command= self.set_volume)
-        self.volumeScale.place(x=690,y=210)
+        self.playButton = tkinter.Button(self.window, image=playImage, bg='#323740', relief='flat', command=self.start)
+        self.playButton.place(x=240, y=10)
+        self.skipButton = tkinter.Button(self.window, image=skipImage, bg='#323740', relief='flat', command=self.skip)
+        self.skipButton.place(x=360, y=10)
+        self.shuffleButton = tkinter.Button(self.window, image=shuffleImage, bg='#323740', relief='flat',
+                                            command=self.shuffle)
+        self.shuffleButton.place(x=420, y=10)
+        self.nextButton = tkinter.Button(self.window, text='Next', width=5, command=self.add_next)
+        self.nextButton.place(x=685, y=150)
+        self.deleteButton = tkinter.Button(self.window, text='Delete', width=5, command=self.delete_song)
+        self.deleteButton.place(x=685, y=180)
+        self.volumeScale = tkinter.Scale(self.window, from_=100, to=0, orient='vertical', bg='#323740', fg='white',
+                                         borderwidth=0, highlightbackground='#323740', length=242,
+                                         command=self.set_volume)
+        self.volumeScale.place(x=690, y=210)
         self.volumeScale.set(self.volume)
-        self.musicScrubber = tkinter.Scale(self.window, from_=0.0, to=1.0, resolution=0.0001, orient='horizontal', bg='#323740', width=5, fg = '#323740', borderwidth=0, highlightbackground='#323740', length=634)
-        self.musicScrubber.place(x=38,y=85)
-        self.queueBox = tkinter.Listbox(self.window, width=79, height=20, font = ("Ariel", 12))
-        self.queueBox.place(x=40,y=150)
-        self.urlEntry = tkinter.Entry(self.window, width=78, font = ("Ariel", 12))
-        self.urlEntry.place(x=40,y=120)
-        self.nowPlayingLabel = tkinter.Label(self.window, text = 'Now Playing:', bg = '#323740', fg = 'white', font = ("Ariel", 12))
+        self.musicScrubber = tkinter.Scale(self.window, from_=0.0, to=1.0, resolution=0.0001, orient='horizontal',
+                                           bg='#323740', width=5, fg='#323740', borderwidth=0,
+                                           highlightbackground='#323740', length=634)
+        self.musicScrubber.place(x=38, y=85)
+        self.queueBox = tkinter.Listbox(self.window, width=79, height=20, font=("Ariel", 12))
+        self.queueBox.place(x=40, y=150)
+        self.urlEntry = tkinter.Entry(self.window, width=78, font=("Ariel", 12))
+        self.urlEntry.place(x=40, y=120)
+        self.nowPlayingLabel = tkinter.Label(self.window, text='Now Playing:', bg='#323740', fg='white',
+                                             font=("Ariel", 12))
         self.nowPlayingLabel.place(x=37, y=80)
-        self.durationLabel = tkinter.Label(self.window, text = '00:00:00', bg = '#323740', fg = 'pink', font = ("Ariel", 12))
-        self.durationLabel.place(x=630,y=80)
-        self.timeLabel = tkinter.Label(self.window, text = '00:00:00 /', bg = '#323740', fg = 'pink', font = ("Ariel", 12))
-        self.timeLabel.place(x=580,y=80)
+        self.durationLabel = tkinter.Label(self.window, text='00:00:00', bg='#323740', fg='pink', font=("Ariel", 12))
+        self.durationLabel.place(x=630, y=80)
+        self.timeLabel = tkinter.Label(self.window, text='00:00:00 /', bg='#323740', fg='pink', font=("Ariel", 12))
+        self.timeLabel.place(x=580, y=80)
 
         self.musicScrubber.bind('<ButtonRelease-1>', lambda x: self.set_scrubber(self.musicScrubber.get()))
         self.urlEntry.bind('<Return>', self.add)
@@ -103,7 +117,7 @@ class SmolPlayer():
                 self.player.play()
                 self.player.audio_set_volume(int(self.volume))
                 self.nowPlaying = video.title
-                self.durationLabel.config(text = video.duration)
+                self.durationLabel.config(text=video.duration)
                 h, m, s = video.duration.split(':')
                 duration = int(h) * 3600 + int(m) * 60 + int(s)
                 ticker = 1 / duration
@@ -156,16 +170,16 @@ class SmolPlayer():
                 self.play()
         else:
             self.playButton.config(state='normal')
-            self.nowPlayingLabel.config(text = 'Now Playing:')
-            self.durationLabel.config(text = '00:00:00')
-            self.timeLabel.config(text = '00:00:00 /')
+            self.nowPlayingLabel.config(text='Now Playing:')
+            self.durationLabel.config(text='00:00:00')
+            self.timeLabel.config(text='00:00:00 /')
             with open('nowPlaying.txt', 'w', encoding='utf-8') as f:
                 f.write('No songs playing. Donate to have your song played on stream.   ')
 
     def get_time(self):
         vtime = self.player.get_time() // 1000
         vtime = time.strftime('%H:%M:%S', time.gmtime(vtime))
-        self.timeLabel.config(text = f'{vtime} /')
+        self.timeLabel.config(text=f'{vtime} /')
 
     def shuffle(self):
         with open('songlist.txt', 'r', encoding='utf-8') as f:
@@ -212,9 +226,10 @@ class SmolPlayer():
     def add(self, event=None):
         url = self.urlEntry.get()
         self.urlEntry.delete(0, 'end')
-        if url.startswith('https://www.youtube.com/') or url.startswith('https://youtu.be') or url.startswith('https://m.youtube.com'):
+        if url.startswith('https://www.youtube.com/') or url.startswith('https://youtu.be') or url.startswith(
+                'https://m.youtube.com'):
             if 'playlist' in url:
-                playlist = get(url).text
+                playlist = get(url, proxies=self.proxies).text
                 soup = BeautifulSoup(playlist, 'lxml')
                 for vid in soup.find_all('a', {'dir': 'ltr'}):
                     if '/watch' in vid['href']:
@@ -226,7 +241,7 @@ class SmolPlayer():
                 self.refresh()
             else:
                 url = self.check(url)
-                webpage = get(url).text
+                webpage = get(url, proxies=self.proxies).text
                 soup = BeautifulSoup(webpage, 'lxml')
                 title = soup.title.string
                 with open('urllist.txt', 'a') as f:
@@ -236,9 +251,9 @@ class SmolPlayer():
                 self.refresh()
         else:
             query = url.replace(' ', '+')
-            video = get(f'https://www.youtube.com/results?search_query={query}').text
+            video = get(f'https://www.youtube.com/results?search_query={query}', proxies=self.proxies).text
             soup = BeautifulSoup(video, 'lxml')
-            for vid in soup.find_all('a', {'class':'yt-uix-tile-link'}):
+            for vid in soup.find_all('a', {'class': 'yt-uix-tile-link'}):
                 if '/watch' in vid['href']:
                     url = 'https://www.youtube.com' + vid['href']
                     songTitle = vid['title']
@@ -255,9 +270,10 @@ class SmolPlayer():
     def add_next(self):
         url = self.urlEntry.get()
         self.urlEntry.delete(0, 'end')
-        if url.startswith('https://www.youtube.com/') or url.startswith('https://youtu.be') or url.startswith('https://m.youtube.com'):
+        if url.startswith('https://www.youtube.com/') or url.startswith('https://youtu.be') or url.startswith(
+                'https://m.youtube.com'):
             if 'playlist' in url:
-                playlist = get(url).text
+                playlist = get(url, proxies=self.proxies).text
                 soup = BeautifulSoup(playlist, 'lxml')
                 for vid in soup.find_all('a', {'dir': 'ltr'}):
                     if '/watch' in vid['href']:
@@ -277,7 +293,7 @@ class SmolPlayer():
                 self.refresh()
             else:
                 url = self.check(url)
-                webpage = get(url).text
+                webpage = get(url, proxies=self.proxies).text
                 soup = BeautifulSoup(webpage, 'lxml')
                 title = soup.title.string
                 with open("urllist.txt", "r") as f:
@@ -295,9 +311,9 @@ class SmolPlayer():
                 self.refresh()
         else:
             query = url.replace(' ', '+')
-            video = get(f'https://www.youtube.com/results?search_query={query}').text
+            video = get(f'https://www.youtube.com/results?search_query={query}', proxies=self.proxies).text
             soup = BeautifulSoup(video, 'lxml')
-            for vid in soup.find_all('a', {'class':'yt-uix-tile-link'}):
+            for vid in soup.find_all('a', {'class': 'yt-uix-tile-link'}):
                 if '/watch' in vid['href']:
                     url = 'https://www.youtube.com' + vid['href']
                     title = vid['title']
@@ -346,10 +362,10 @@ class SmolPlayer():
         if characters <= 43:
             return url
         else:
-            messagebox.showwarning("SmolPlayer", "Song from playlist. If you wanted to add a playlist please use the playlist page url instead.")
+            messagebox.showwarning("SmolPlayer",
+                                   "Song from playlist. If you wanted to add a playlist please use the playlist page url instead.")
             url = url[:43]
             return url
-
 
     def delete_song(self, event=None):
         selected = self.queueBox.curselection()
@@ -367,7 +383,6 @@ class SmolPlayer():
             data = ''.join(data)
         with open("urllist.txt", "w") as f:
             f.write(data)
-
 
     def paste(self, event=None):
         try:
@@ -396,6 +411,7 @@ class SmolPlayer():
             self.window.destroy()
         except:
             self.window.destroy()
+
 
 if __name__ == '__main__':
     SmolPlayer()
