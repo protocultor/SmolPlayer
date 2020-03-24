@@ -15,16 +15,10 @@ from tkinter import messagebox
 from requests import get
 from bs4 import BeautifulSoup
 
-os.environ["HTTPS_PROXY"] = "http://72.35.40.34:8080"
-
 class SmolPlayer():
     def __init__(self):
         directory = getcwd()
         chdir(directory)
-        self.proxies = {
-            'http': 'http://190.103.178.14:8080',
-            'https': 'http://69.195.240.13:8080',
-        }
         self.ticker = 0
         self.paused = False
         self.nowPlaying = ''
@@ -229,7 +223,7 @@ class SmolPlayer():
         if url.startswith('https://www.youtube.com/') or url.startswith('https://youtu.be') or url.startswith(
                 'https://m.youtube.com'):
             if 'playlist' in url:
-                playlist = get(url, proxies=self.proxies).text
+                playlist = get(url).text
                 soup = BeautifulSoup(playlist, 'lxml')
                 for vid in soup.find_all('a', {'dir': 'ltr'}):
                     if '/watch' in vid['href']:
@@ -241,7 +235,7 @@ class SmolPlayer():
                 self.refresh()
             else:
                 url = self.check(url)
-                webpage = get(url, proxies=self.proxies).text
+                webpage = get(url).text
                 soup = BeautifulSoup(webpage, 'lxml')
                 title = soup.title.string
                 with open('urllist.txt', 'a') as f:
@@ -251,7 +245,7 @@ class SmolPlayer():
                 self.refresh()
         else:
             query = url.replace(' ', '+')
-            video = get(f'https://www.youtube.com/results?search_query={query}', proxies=self.proxies).text
+            video = get(f'https://www.youtube.com/results?search_query={query}').text
             soup = BeautifulSoup(video, 'lxml')
             for vid in soup.find_all('a', {'class': 'yt-uix-tile-link'}):
                 if '/watch' in vid['href']:
@@ -273,7 +267,7 @@ class SmolPlayer():
         if url.startswith('https://www.youtube.com/') or url.startswith('https://youtu.be') or url.startswith(
                 'https://m.youtube.com'):
             if 'playlist' in url:
-                playlist = get(url, proxies=self.proxies).text
+                playlist = get(url).text
                 soup = BeautifulSoup(playlist, 'lxml')
                 for vid in soup.find_all('a', {'dir': 'ltr'}):
                     if '/watch' in vid['href']:
@@ -293,7 +287,7 @@ class SmolPlayer():
                 self.refresh()
             else:
                 url = self.check(url)
-                webpage = get(url, proxies=self.proxies).text
+                webpage = get(url).text
                 soup = BeautifulSoup(webpage, 'lxml')
                 title = soup.title.string
                 with open("urllist.txt", "r") as f:
@@ -311,7 +305,7 @@ class SmolPlayer():
                 self.refresh()
         else:
             query = url.replace(' ', '+')
-            video = get(f'https://www.youtube.com/results?search_query={query}', proxies=self.proxies).text
+            video = get(f'https://www.youtube.com/results?search_query={query}').text
             soup = BeautifulSoup(video, 'lxml')
             for vid in soup.find_all('a', {'class': 'yt-uix-tile-link'}):
                 if '/watch' in vid['href']:
