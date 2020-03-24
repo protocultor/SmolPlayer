@@ -51,7 +51,7 @@ class SmolPlayer():
         self.shuffleButton = tkinter.Button(self.window, image=shuffleImage, bg='#323740', relief='flat',
                                             command=self.shuffle)
         self.shuffleButton.place(x=420, y=10)
-        self.nextButton = tkinter.Button(self.window, text='Next', width=5, command=self.add_next)
+        self.nextButton = tkinter.Button(self.window, text='Next', width=5, command=self.up_next)
         self.nextButton.place(x=685, y=150)
         self.deleteButton = tkinter.Button(self.window, text='Delete', width=5, command=self.delete_song)
         self.deleteButton.place(x=685, y=180)
@@ -261,73 +261,23 @@ class SmolPlayer():
                 else:
                     pass
 
-    def add_next(self):
-        url = self.urlEntry.get()
-        self.urlEntry.delete(0, 'end')
-        if url.startswith('https://www.youtube.com/') or url.startswith('https://youtu.be') or url.startswith(
-                'https://m.youtube.com'):
-            if 'playlist' in url:
-                playlist = get(url).text
-                soup = BeautifulSoup(playlist, 'lxml')
-                for vid in soup.find_all('a', {'dir': 'ltr'}):
-                    if '/watch' in vid['href']:
-                        url = ('https://www.youtube.com' + vid['href']).split('&list')[0]
-                        with open("urllist.txt", "r") as f:
-                            data = f.readlines()
-                            data.insert(0, f'{url}\n')
-                            data = ''.join(data)
-                        with open("urllist.txt", "w") as f:
-                            f.write(data)
-                        with open("songlist.txt", "r", encoding='utf-8') as f:
-                            data = f.readlines()
-                            data.insert(0, f'{vid.string.strip()}\n')
-                            data = ''.join(data)
-                        with open("songlist.txt", "w", encoding='utf-8') as f:
-                            f.write(data)
-                self.refresh()
-            else:
-                url = self.check(url)
-                webpage = get(url).text
-                soup = BeautifulSoup(webpage, 'lxml')
-                title = soup.title.string
-                with open("urllist.txt", "r") as f:
-                    data = f.readlines()
-                    data.insert(0, f'{url}\n')
-                    data = ''.join(data)
-                with open("urllist.txt", "w") as f:
-                    f.write(data)
-                with open("songlist.txt", "r", encoding='utf-8') as f:
-                    data = f.readlines()
-                    data.insert(0, f'{title}\n')
-                    data = ''.join(data)
-                with open("songlist.txt", "w", encoding='utf-8') as f:
-                    f.write(data)
-                self.refresh()
-        else:
-            query = url.replace(' ', '+')
-            video = get(f'https://www.youtube.com/results?search_query={query}').text
-            soup = BeautifulSoup(video, 'lxml')
-            for vid in soup.find_all('a', {'class': 'yt-uix-tile-link'}):
-                if '/watch' in vid['href']:
-                    url = 'https://www.youtube.com' + vid['href']
-                    title = vid['title']
-                    url = self.check(url)
-                    with open("urllist.txt", "r") as f:
-                        data = f.readlines()
-                        data.insert(0, f'{url}\n')
-                        data = ''.join(data)
-                    with open("urllist.txt", "w") as f:
-                        f.write(data)
-                    with open("songlist.txt", "r", encoding='utf-8') as f:
-                        data = f.readlines()
-                        data.insert(0, f'{title}\n')
-                        data = ''.join(data)
-                    with open("songlist.txt", "w", encoding='utf-8') as f:
-                        f.write(data)
-                    self.refresh()
-                    break
-                else:
-                    pass
+    def up_next(self):
+        index = int(self.queueBox.curselection()[0])
+        with open('songlist.txt', 'r', encoding='utf-8') as f:
+            songs = f.readlines()
+        with open('urllist.txt', 'r', encoding='utf-8') as f:
+            urls = f.readlines()
+        songs.insert(0, songs[index])
+        songs.pop(index + 1)
+        urls.insert(0, urls[index])
+        urls.pop(index + 1)
+        with open('songlist.txt', 'w', encoding='utf-8') as f:
+            for song in songs:
+                f.write(song)
+        with open('urllist.txt', 'w') as f:
+            for url in urls:
+                f.write(url)
+        self.refresh()
 
     def update(self):
         with open("urllist.txt", "r") as f:
