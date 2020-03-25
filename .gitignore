@@ -2,3 +2,4 @@ songlist.txt
 urllist.txt
 nowPlaying.txt
 **/.DS_Store
+__pycache__
