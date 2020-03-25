@@ -18,11 +18,7 @@ from random import shuffle
 from os import chdir, getcwd
 from requests import get
 from bs4 import BeautifulSoup
-
-import os.path
-import ssl
-import stat
-import subprocess
+import webbrowser
 
 class SmolPlayer():
     def __init__(self):
@@ -171,7 +167,13 @@ class SmolPlayer():
                 self.play()
             except Exception as error:
                 self.threadLock.release()
-                tkinter.messagebox.showwarning(title='Warning', message=error)
+                if 'ssl' and 'SSL' in error:
+                    messagebox.showwarning(title="Python Needs to Be Installed", message="Because of SSL security issues, you need to install Python on your Mac if you want to use this app.")
+                    if messagebox.askokcancel("Install Python", "Would you like to install Python now?"):
+                        messagebox.showinfo("Update Certificates", "After installing python, go to https://stackoverflow.com/questions/42098126 to figure out to fix the certificates.")
+                        webbrowser.open("https://www.python.org/ftp/python/3.8.2/python-3.8.2-macosx10.9.pkg")
+                else:
+                    messagebox.showwarning(title='Warning', message=error)
                 self.update()
                 self.play()
         else:
