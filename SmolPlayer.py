@@ -39,13 +39,12 @@ class SmolPlayer():
         skipImage = tkinter.PhotoImage(file='assets/skip.png')
         shuffleImage = tkinter.PhotoImage(file='assets/shuffle.png')
 
-        tkinter.Button(self.window, image=pauseImage, bg='#323740', relief='flat', command=self.pause).place(x=300,
-                                                                                                             y=10)
+        self.pauseButton = tkinter.Button(self.window, image=pauseImage, bg='#323740', relief='flat', command=self.pause)
         tkinter.Button(self.window, text='Add', bg='blue', width=5, command=self.add).place(x=685, y=120)
         # tkinter.Button(self.window, text = 'Clear', width=10, command = self.clear).place(x=380,y=5)
 
         self.playButton = tkinter.Button(self.window, image=playImage, bg='#323740', relief='flat', command=self.start)
-        self.playButton.place(x=240, y=10)
+        self.playButton.place(x=300, y=10)
         self.skipButton = tkinter.Button(self.window, image=skipImage, bg='#323740', relief='flat', command=self.skip)
         self.skipButton.place(x=360, y=10)
         self.shuffleButton = tkinter.Button(self.window, image=shuffleImage, bg='#323740', relief='flat',
@@ -86,10 +85,12 @@ class SmolPlayer():
         self.window.mainloop()
 
     def start(self):
-        if self.paused == True:
+        if self.paused:
             self.paused = False
             self.player.set_pause(0)
             self.playButton.config(state='disabled')
+            self.playButton.place_forget()
+            self.pauseButton.place(x=300, y=10)
         else:
             t1 = threading.Thread(target=self.play)
             t1.daemon = True
@@ -109,6 +110,8 @@ class SmolPlayer():
                 media = vInstance.media_new(playurl)
                 self.player.set_media(media)
                 self.player.play()
+                self.playButton.place_forget()
+                self.pauseButton.place(x=300,y=10)
                 self.player.audio_set_volume(int(self.volume))
                 self.nowPlaying = video.title
                 self.durationLabel.config(text=video.duration)
@@ -196,6 +199,8 @@ class SmolPlayer():
             self.player.set_pause(1)
             self.paused = True
             self.playButton.config(state='normal')
+            self.pauseButton.place_forget()
+            self.playButton.place(x=300, y=10)
         else:
             pass
 
