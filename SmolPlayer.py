@@ -75,7 +75,7 @@ class SmolPlayer():
                                              font=("Ariel", 12))
         self.nowPlayingLabel.place(x=37, y=80)
         self.durationLabel = tkinter.Label(self.window, text='00:00:00', bg='#323740', fg='pink', font=("Ariel", 12))
-        self.durationLabel.place(x=639, y=80)
+        self.durationLabel.place(x=645, y=80)
         self.timeLabel = tkinter.Label(self.window, text='00:00:00 /', bg='#323740', fg='pink', font=("Ariel", 12))
         self.timeLabel.place(x=580, y=80)
 
