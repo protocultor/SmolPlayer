@@ -367,4 +367,8 @@ class SmolPlayer():
 
 
 if __name__ == '__main__':
+    if not os.path.exists('songlist.txt'):
+        os.system('touch songlist.txt')
+    if not os.path.exists('urllist.txt'):
+        os.system('touch urllist.txt')
     SmolPlayer()
