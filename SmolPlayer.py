@@ -2,16 +2,20 @@
 # -*- coding: utf-8 -*-
 
 import pafy
-import tkinter
 import threading
 import time
 import codecs
 import sys
 import os
+from tkinter import messagebox
+try:
+    from vlc import Instance, State
+except OSError:
+    messagebox.showwarning(title='Missing Requirements', message="This application requires VLC to run. Please install VLC and try again.")
+    sys.exit()
+import tkinter
 from random import shuffle
 from os import chdir, getcwd
-from vlc import Instance, State
-from tkinter import messagebox
 from requests import get
 from bs4 import BeautifulSoup
 
