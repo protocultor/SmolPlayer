@@ -171,7 +171,7 @@ class SmolPlayer():
                 self.play()
             except Exception as error:
                 self.threadLock.release()
-                if "url" in error:
+                if "SSL" or 'ssl' in error:
                     installCerts()
                 tkinter.messagebox.showwarning(title='Warning', message=error)
                 self.update()
@@ -241,7 +241,7 @@ class SmolPlayer():
         if url.startswith('https://www.youtube.com/') or url.startswith('https://youtu.be') or url.startswith(
                 'https://m.youtube.com'):
             if 'playlist' in url:
-                playlist = get(url).text
+                playlist = get(url, verify=False).text
                 soup = BeautifulSoup(playlist, 'lxml')
                 for vid in soup.find_all('a', {'dir': 'ltr'}):
                     if '/watch' in vid['href']:
@@ -253,7 +253,7 @@ class SmolPlayer():
                 self.refresh()
             else:
                 url = self.check(url)
-                webpage = get(url).text
+                webpage = get(url, verify=False).text
                 soup = BeautifulSoup(webpage, 'lxml')
                 title = soup.title.string
                 with open('urllist.txt', 'a') as f:
@@ -263,7 +263,7 @@ class SmolPlayer():
                 self.refresh()
         else:
             query = url.replace(' ', '+')
-            video = get(f'https://www.youtube.com/results?search_query={query}').text
+            video = get(f'https://www.youtube.com/results?search_query={query}', verify=False).text
             soup = BeautifulSoup(video, 'lxml')
             results = soup.find_all('a', {'class': 'yt-uix-tile-link'})
             if len(results) == 0:
@@ -328,8 +328,7 @@ class SmolPlayer():
         if characters <= 43:
             return url
         else:
-            messagebox.showwarning("SmolPlayer",
-                                   "Song from playlist. If you wanted to add a playlist please use the playlist page url instead.")
+            messagebox.showwarning("SmolPlayer", "Song from playlist. If you wanted to add a playlist please use the playlist page url instead.")
             url = url[:43]
             return url
 
