@@ -171,6 +171,8 @@ class SmolPlayer():
                 self.play()
         else:
             self.playButton.config(state='normal')
+            self.pauseButton.place_forget()
+            self.playButton.place(x=300, y=10)
             self.nowPlayingLabel.config(text='Now Playing:')
             self.durationLabel.config(text='00:00:00')
             self.timeLabel.config(text='00:00:00 /')
