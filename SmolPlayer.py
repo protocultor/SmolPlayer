@@ -111,7 +111,7 @@ class SmolPlayer():
         if url:
             try:
                 self.threadLock.acquire()
-                video = pafy.new(url, ydl_opts="--no-check-certificate")
+                video = pafy.new(url)
                 best = video.getbest()
                 playurl = best.url
                 vInstance = Instance('--novideo')
@@ -171,8 +171,6 @@ class SmolPlayer():
                 self.play()
             except Exception as error:
                 self.threadLock.release()
-                if "SSL" or 'ssl' in error:
-                    installCerts()
                 tkinter.messagebox.showwarning(title='Warning', message=error)
                 self.update()
                 self.play()
@@ -241,7 +239,7 @@ class SmolPlayer():
         if url.startswith('https://www.youtube.com/') or url.startswith('https://youtu.be') or url.startswith(
                 'https://m.youtube.com'):
             if 'playlist' in url:
-                playlist = get(url, verify=False).text
+                playlist = get(url).text
                 soup = BeautifulSoup(playlist, 'lxml')
                 for vid in soup.find_all('a', {'dir': 'ltr'}):
                     if '/watch' in vid['href']:
@@ -253,7 +251,7 @@ class SmolPlayer():
                 self.refresh()
             else:
                 url = self.check(url)
-                webpage = get(url, verify=False).text
+                webpage = get(url).text
                 soup = BeautifulSoup(webpage, 'lxml')
                 title = soup.title.string
                 with open('urllist.txt', 'a') as f:
@@ -263,7 +261,7 @@ class SmolPlayer():
                 self.refresh()
         else:
             query = url.replace(' ', '+')
-            video = get(f'https://www.youtube.com/results?search_query={query}', verify=False).text
+            video = get(f'https://www.youtube.com/results?search_query={query}').text
             soup = BeautifulSoup(video, 'lxml')
             results = soup.find_all('a', {'class': 'yt-uix-tile-link'})
             if len(results) == 0:
