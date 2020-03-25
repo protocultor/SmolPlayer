@@ -256,19 +256,23 @@ class SmolPlayer():
             query = url.replace(' ', '+')
             video = get(f'https://www.youtube.com/results?search_query={query}').text
             soup = BeautifulSoup(video, 'lxml')
-            for vid in soup.find_all('a', {'class': 'yt-uix-tile-link'}):
-                if '/watch' in vid['href']:
-                    url = 'https://www.youtube.com' + vid['href']
-                    songTitle = vid['title']
-                    url = self.check(url)
-                    with open("urllist.txt", "a") as f:
-                        f.write(f'{url}\n')
-                    with open("songlist.txt", "a", encoding='utf-8') as f:
-                        f.write(f'{songTitle}\n')
-                    self.refresh()
-                    break
-                else:
-                    pass
+            results = soup.find_all('a', {'class': 'yt-uix-tile-link'})
+            if len(results) == 0:
+                messagebox.showinfo("Couldn't Find Song", "SmolPlayer could not find a song matching your query. Try revising your search.")
+            else:
+                for vid in results:
+                    if '/watch' in vid['href']:
+                        url = 'https://www.youtube.com' + vid['href']
+                        songTitle = vid['title']
+                        url = self.check(url)
+                        with open("urllist.txt", "a") as f:
+                            f.write(f'{url}\n')
+                        with open("songlist.txt", "a", encoding='utf-8') as f:
+                            f.write(f'{songTitle}\n')
+                        self.refresh()
+                        break
+                    else:
+                        pass
 
     def up_next(self):
         index = int(self.queueBox.curselection()[0])
@@ -346,6 +350,7 @@ class SmolPlayer():
         except:
             pass
 
+    # This function is not in use right now
     def clear(self):
         self.queueBox.delete(0, 'end')
         with open("songlist.txt", "w", encoding="utf-8") as f:
