@@ -1,5 +1,5 @@
 # SmolPlayer
-I forked this awesome little Youtube music app to make even more hawt. 
+I forked this awesome little Youtube music app to make even more hawt. You know what bugs me though? _Github doesn't count contributions to a **fork!**_ I was **ssed.
 
 If you want to install this app on your mac, just make sure you have the VLC media player app installed first. This app will not work without VLC. ;)
 
