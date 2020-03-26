@@ -3,3 +3,5 @@ urllist.txt
 nowPlaying.txt
 **/.DS_Store
 __pycache__
+venv
+.idea
