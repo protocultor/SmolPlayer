@@ -113,9 +113,7 @@ class SmolPlayer:
         if url:
             try:
                 self.threadLock.acquire()
-                ytdl_opts = {}
-                ytdl_opts['source_address'] = '0.0.0.0'
-                ytdl_opts['format'] = 'bestaudio/best'
+                ytdl_opts = {'source_address': '0.0.0.0', 'format': 'bestaudio/best'}
                 video = pafy.new(url, ydl_opts=ytdl_opts)
                 best = video.getbest()
                 playurl = best.url
