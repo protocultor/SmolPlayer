@@ -9,7 +9,18 @@ from setuptools import setup
 
 APP = ['SmolPlayer.py']
 DATA_FILES = ['assets', 'songlist.txt', 'urllist.txt']
-OPTIONS = {'iconfile':'app.icns'}
+OPTIONS = {
+    'iconfile':'app.icns',
+    'plist': {
+            'CFBundleName': "SmolPlayer.app",
+            'CFBundleDisplayName': "SmolPlayer.app",
+            'CFBundleGetInfoString': "Youtube Audio Player",
+            'CFBundleIdentifier': "com.42.osx.smolplayer",
+            'CFBundleVersion': "1.0.42",
+            'CFBundleShortVersionString': "0.1.42",
+            'NSHumanReadableCopyright': u"Copyright © 2020, Noah Broyles, All Rights Reserved"
+        }
+}
 
 setup(
     app=APP,
