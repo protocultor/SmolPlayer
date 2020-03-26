@@ -5,3 +5,4 @@ nowPlaying.txt
 __pycache__
 venv
 .idea
+dist
