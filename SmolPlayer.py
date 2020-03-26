@@ -8,10 +8,12 @@ import codecs
 import sys
 import os
 from tkinter import messagebox
+
 try:
     from vlc import Instance, State
 except OSError:
-    messagebox.showwarning(title='Missing Requirements', message="This application requires VLC to run. Please install VLC and try again.")
+    messagebox.showwarning(title='Missing Requirements',
+                           message="This application requires VLC to run. Please install VLC and try again.")
     sys.exit()
 import tkinter
 from random import shuffle
@@ -20,7 +22,8 @@ from requests import get
 from bs4 import BeautifulSoup
 import webbrowser
 
-class SmolPlayer():
+
+class SmolPlayer:
     def __init__(self):
         directory = getcwd()
         chdir(directory)
@@ -44,7 +47,8 @@ class SmolPlayer():
         skipImage = tkinter.PhotoImage(file='assets/skip.png')
         shuffleImage = tkinter.PhotoImage(file='assets/shuffle.png')
 
-        self.pauseButton = tkinter.Button(self.window, image=pauseImage, bg='#323740', relief='flat', command=self.pause)
+        self.pauseButton = tkinter.Button(self.window, image=pauseImage, bg='#323740', relief='flat',
+                                          command=self.pause)
         tkinter.Button(self.window, text='Add', bg='blue', width=5, command=self.add).place(x=685, y=120)
         # tkinter.Button(self.window, text = 'Clear', width=10, command = self.clear).place(x=380,y=5)
 
@@ -116,7 +120,7 @@ class SmolPlayer():
                 self.player.set_media(media)
                 self.player.play()
                 self.playButton.place_forget()
-                self.pauseButton.place(x=300,y=10)
+                self.pauseButton.place(x=300, y=10)
                 self.player.audio_set_volume(int(self.volume))
                 self.nowPlaying = video.title
                 self.durationLabel.config(text=video.duration)
@@ -168,9 +172,11 @@ class SmolPlayer():
             except Exception as error:
                 self.threadLock.release()
                 if 'ssl' and 'SSL' in error:
-                    messagebox.showwarning(title="Python Needs to Be Installed", message="Because of SSL security issues, you need to install Python on your Mac if you want to use this app.")
+                    messagebox.showwarning(title="Python Needs to Be Installed",
+                                           message="Because of SSL security issues, you need to install Python on your Mac if you want to use this app.")
                     if messagebox.askokcancel("Install Python", "Would you like to install Python now?"):
-                        messagebox.showinfo("Update Certificates", "After installing python, go to https://stackoverflow.com/questions/42098126 to figure out to fix the certificates.")
+                        messagebox.showinfo("Update Certificates",
+                                            "After installing python, go to https://stackoverflow.com/questions/42098126 to figure out to fix the certificates.")
                         webbrowser.open("https://www.python.org/ftp/python/3.8.2/python-3.8.2-macosx10.9.pkg")
                 else:
                     messagebox.showwarning(title='Warning', message=error)
@@ -267,7 +273,8 @@ class SmolPlayer():
             soup = BeautifulSoup(video, 'lxml')
             results = soup.find_all('a', {'class': 'yt-uix-tile-link'})
             if len(results) == 0:
-                messagebox.showinfo("Couldn't Find Song", "SmolPlayer could not find a song matching your query. Try revising your search.")
+                messagebox.showinfo("Couldn't Find Song",
+                                    "SmolPlayer could not find a song matching your query. Try revising your search.")
             else:
                 for vid in results:
                     if '/watch' in vid['href']:
@@ -328,7 +335,8 @@ class SmolPlayer():
         if characters <= 43:
             return url
         else:
-            messagebox.showwarning("SmolPlayer", "Song from playlist. If you wanted to add a playlist please use the playlist page url instead.")
+            messagebox.showwarning("SmolPlayer",
+                                   "Song from playlist. If you wanted to add a playlist please use the playlist page url instead.")
             url = url[:43]
             return url
 
