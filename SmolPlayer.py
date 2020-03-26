@@ -7,7 +7,6 @@ import time
 import codecs
 import sys
 import os
-# os.environ['PAFY_BACKEND'] = "internal"
 from tkinter import messagebox
 
 try:
@@ -378,7 +377,7 @@ class SmolPlayer:
             f.write('')
 
     def stopped(self):
-        while self._stop_event.is_set() == False:
+        while not self._stop_event.is_set():
             continue
 
     def on_closing(self):
