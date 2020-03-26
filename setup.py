@@ -12,12 +12,12 @@ DATA_FILES = ['assets', 'songlist.txt', 'urllist.txt']
 OPTIONS = {
     'iconfile':'app.icns',
     'plist': {
-            'CFBundleName': "SmolPlayer.app",
-            'CFBundleDisplayName': "SmolPlayer.app",
+            'CFBundleName': "SmolPlayer",
+            'CFBundleDisplayName': "SmolPlayer",
             'CFBundleGetInfoString': "Youtube Audio Player",
             'CFBundleIdentifier': "com.42.osx.smolplayer",
-            'CFBundleVersion': "1.0.42",
-            'CFBundleShortVersionString': "0.1.42",
+            'CFBundleVersion': "0.1.42",
+            'CFBundleShortVersionString': "1.0.42",
             'NSHumanReadableCopyright': u"Copyright © 2020, Noah Broyles, All Rights Reserved"
         }
 }

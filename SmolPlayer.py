@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import pafy
+
 import threading
 import time
 import codecs
 import sys
 import os
+# os.environ['PAFY_BACKEND'] = "internal"
 from tkinter import messagebox
 
 try:
@@ -21,6 +22,7 @@ from os import chdir, getcwd
 from requests import get
 from bs4 import BeautifulSoup
 import webbrowser
+import pafy
 
 
 class SmolPlayer:
@@ -111,7 +113,7 @@ class SmolPlayer:
         if url:
             try:
                 self.threadLock.acquire()
-                video = pafy.new(url)
+                video = pafy.new(url, ydl_opts="--force-ipv4")
                 best = video.getbest()
                 playurl = best.url
                 vInstance = Instance('--novideo')
@@ -171,7 +173,7 @@ class SmolPlayer:
                 self.play()
             except Exception as error:
                 self.threadLock.release()
-                if 'ssl' and 'SSL' in error:
+                if 'ssl' and 'SSL' in str(error):
                     messagebox.showwarning(title="Python Needs to Be Installed",
                                            message="Because of SSL security issues, you need to install Python on your Mac if you want to use this app.")
                     if messagebox.askokcancel("Install Python", "Would you like to install Python now?"):
