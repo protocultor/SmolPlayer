@@ -179,7 +179,7 @@ class SmolPlayer:
                     if messagebox.askokcancel("Install Python", "Would you like to install Python now?"):
                         messagebox.showinfo("Update Certificates",
                                             "After installing python, go to https://stackoverflow.com/questions/42098126 to figure out to fix the certificates.")
-                        webbrowser.open("https://www.python.org/ftp/python/3.8.2/python-3.8.2-macosx10.9.pkg")
+                        webbrowser.open("https://www.python.org/ftp/python/3.7.7/python-3.7.7-macosx10.9.pkg")
                 else:
                     messagebox.showwarning(title='Warning', message=error)
                 self.update()
