@@ -26,10 +26,10 @@ import pafy
 
 class SmolPlayer:
     def __init__(self, window):
-        fnt = ('Ariel', 12)
+        fnt = ('Ariel', 11)
         for favorite in ['Quicksand Medium', 'DejaVu Sans', 'Dingbats', 'Droid Sans Fallback']:
             if favorite in font.families():
-                fnt = (favorite, 12)
+                fnt = (favorite, 11)
                 break
         directory = getcwd()
         chdir(directory)
@@ -38,14 +38,14 @@ class SmolPlayer:
         self.nowPlaying = ''
         self.songPosition = 0
         self.player = ''
-        self.volume = 42
+        self.volume = 50
         self.run = True
         self.threadLock = threading.Lock()
         self.window = window
         self.window.title('SmolPlayer')
         self.window.configure(background='#323740')
         self.width, self.height = self.window.winfo_screenwidth(), self.window.winfo_screenheight()
-        self.window.geometry('%dx%d+%d+%d' % (775, 500, self.width // 2 - 400, self.height // 2 - 340))
+        self.window.geometry('%dx%d+%d+%d' % (790, 590, self.width // 2 - 400, self.height // 2 - 340))
         self.window.resizable(False, False)
 
         playImage = tkinter.PhotoImage(file='assets/play.png')
@@ -73,23 +73,23 @@ class SmolPlayer:
         self.volumeScale = tkinter.Scale(self.window, from_=100, to=0, orient='vertical', bg='#323740', fg='white',
                                          borderwidth=0, highlightbackground='#323740', length=242,
                                          command=self.set_volume)
-        self.volumeScale.place(x=690, y=210)
+        self.volumeScale.place(x=690, y=240)
         self.volumeScale.set(self.volume)
         self.musicScrubber = tkinter.Scale(self.window, from_=0.0, to=1.0, resolution=0.0001, orient='horizontal',
                                            bg='#323740', width=5, fg='#323740', borderwidth=0,
-                                           highlightbackground='#323740', length=634)
+                                           highlightbackground='#323740', length=718)
         self.musicScrubber.place(x=38, y=85)
-        self.queueBox = tkinter.Listbox(self.window, width=79, height=20, font=fnt)
+        self.queueBox = tkinter.Listbox(self.window, width=65, height=20, font=fnt)
         self.queueBox.place(x=40, y=150)
-        self.urlEntry = tkinter.Entry(self.window, width=78, font=fnt)
+        self.urlEntry = tkinter.Entry(self.window, width=65, font=fnt)
         self.urlEntry.place(x=40, y=120)
         self.nowPlayingLabel = tkinter.Label(self.window, text='Now Playing:', bg='#323740', fg='white',
                                              font=fnt)
         self.nowPlayingLabel.place(x=37, y=80)
         self.durationLabel = tkinter.Label(self.window, text='/ 00:00:00', bg='#323740', fg='pink', font=fnt)
-        self.durationLabel.place(x=647, y=80)
+        self.durationLabel.place(x=680, y=80)
         self.timeLabel = tkinter.Label(self.window, text='00:00:00', bg='#323740', fg='pink', font=fnt)
-        self.timeLabel.place(x=580, y=80)
+        self.timeLabel.place(x=615, y=80)
 
         self.musicScrubber.bind('<ButtonRelease-1>', lambda x: self.set_scrubber(self.musicScrubber.get()))
         self.urlEntry.bind('<Return>', self.add)
