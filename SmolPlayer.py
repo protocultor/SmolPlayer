@@ -80,9 +80,9 @@ class SmolPlayer:
         self.nowPlayingLabel = tkinter.Label(self.window, text='Now Playing:', bg='#323740', fg='white',
                                              font=("Ariel", 12))
         self.nowPlayingLabel.place(x=37, y=80)
-        self.durationLabel = tkinter.Label(self.window, text='00:00:00', bg='#323740', fg='pink', font=("Ariel", 12))
+        self.durationLabel = tkinter.Label(self.window, text='/ 00:00:00', bg='#323740', fg='pink', font=("Ariel", 12))
         self.durationLabel.place(x=647, y=80)
-        self.timeLabel = tkinter.Label(self.window, text='00:00:00 /', bg='#323740', fg='pink', font=("Ariel", 12))
+        self.timeLabel = tkinter.Label(self.window, text='00:00:00', bg='#323740', fg='pink', font=("Ariel", 12))
         self.timeLabel.place(x=580, y=80)
 
         self.musicScrubber.bind('<ButtonRelease-1>', lambda x: self.set_scrubber(self.musicScrubber.get()))
@@ -125,7 +125,7 @@ class SmolPlayer:
                 self.pauseButton.place(x=300, y=10)
                 self.player.audio_set_volume(int(self.volume))
                 self.nowPlaying = video.title
-                self.durationLabel.config(text=video.duration)
+                self.durationLabel.config(text=f'/ {video.duration}')
                 h, m, s = video.duration.split(':')
                 duration = int(h) * 3600 + int(m) * 60 + int(s)
                 ticker = 1 / duration
@@ -190,15 +190,15 @@ class SmolPlayer:
             self.pauseButton.place_forget()
             self.playButton.place(x=300, y=10)
             self.nowPlayingLabel.config(text='Now Playing:')
-            self.durationLabel.config(text='00:00:00')
-            self.timeLabel.config(text='00:00:00 /')
+            self.durationLabel.config(text='/ 00:00:00')
+            self.timeLabel.config(text='00:00:00')
             with open('nowPlaying.txt', 'w', encoding='utf-8') as f:
                 f.write('No songs playing. Donate to have your song played on stream.   ')
 
     def get_time(self):
         vtime = self.player.get_time() // 1000
         vtime = time.strftime('%H:%M:%S', time.gmtime(vtime))
-        self.timeLabel.config(text=f'{vtime} /')
+        self.timeLabel.config(text=vtime)
 
     def shuffle(self):
         with open('songlist.txt', 'r', encoding='utf-8') as f:
