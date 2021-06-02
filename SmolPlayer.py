@@ -7,7 +7,6 @@ import time
 import codecs
 import sys
 import os
-from tkinter import messagebox
 
 try:
     from vlc import Instance, State
@@ -18,6 +17,7 @@ except OSError:
 import tkinter
 from random import shuffle
 from os import chdir, getcwd
+from tkinter import messagebox, font
 from requests import get
 from bs4 import BeautifulSoup
 import webbrowser
@@ -26,6 +26,11 @@ import pafy
 
 class SmolPlayer:
     def __init__(self, window):
+        fnt = ('Ariel', 12)
+        for favorite in ['Quicksand Medium', 'DejaVu Sans', 'Dingbats', 'Droid Sans Fallback']:
+            if favorite in font.families():
+                fnt = (favorite, 12)
+                break
         directory = getcwd()
         chdir(directory)
         self.ticker = 0
@@ -50,7 +55,6 @@ class SmolPlayer:
 
         self.pauseButton = tkinter.Button(self.window, image=pauseImage, bg='#323740', relief='flat',
                                           command=self.pause)
-        tkinter.Button(self.window, text='Add', bg='blue', width=5, command=self.add).place(x=685, y=120)
         # tkinter.Button(self.window, text = 'Clear', width=10, command = self.clear).place(x=380,y=5)
 
         self.playButton = tkinter.Button(self.window, image=playImage, bg='#323740', relief='flat', command=self.start)
@@ -60,9 +64,11 @@ class SmolPlayer:
         self.shuffleButton = tkinter.Button(self.window, image=shuffleImage, bg='#323740', relief='flat',
                                             command=self.shuffle)
         self.shuffleButton.place(x=420, y=10)
-        self.nextButton = tkinter.Button(self.window, text='Next', width=5, command=self.up_next)
+
+        tkinter.Button(self.window, text='Add', bg='blue', width=5, command=self.add, font=fnt).place(x=685, y=120)
+        self.nextButton = tkinter.Button(self.window, text='Next', width=5, command=self.up_next, font=fnt)
         self.nextButton.place(x=685, y=150)
-        self.deleteButton = tkinter.Button(self.window, text='Delete', width=5, command=self.delete_song)
+        self.deleteButton = tkinter.Button(self.window, text='Delete', width=5, command=self.delete_song, font=fnt)
         self.deleteButton.place(x=685, y=180)
         self.volumeScale = tkinter.Scale(self.window, from_=100, to=0, orient='vertical', bg='#323740', fg='white',
                                          borderwidth=0, highlightbackground='#323740', length=242,
@@ -73,16 +79,16 @@ class SmolPlayer:
                                            bg='#323740', width=5, fg='#323740', borderwidth=0,
                                            highlightbackground='#323740', length=634)
         self.musicScrubber.place(x=38, y=85)
-        self.queueBox = tkinter.Listbox(self.window, width=79, height=20, font=("Ariel", 12))
+        self.queueBox = tkinter.Listbox(self.window, width=79, height=20, font=fnt)
         self.queueBox.place(x=40, y=150)
-        self.urlEntry = tkinter.Entry(self.window, width=78, font=("Ariel", 12))
+        self.urlEntry = tkinter.Entry(self.window, width=78, font=fnt)
         self.urlEntry.place(x=40, y=120)
         self.nowPlayingLabel = tkinter.Label(self.window, text='Now Playing:', bg='#323740', fg='white',
-                                             font=("Ariel", 12))
+                                             font=fnt)
         self.nowPlayingLabel.place(x=37, y=80)
-        self.durationLabel = tkinter.Label(self.window, text='/ 00:00:00', bg='#323740', fg='pink', font=("Ariel", 12))
+        self.durationLabel = tkinter.Label(self.window, text='/ 00:00:00', bg='#323740', fg='pink', font=fnt)
         self.durationLabel.place(x=647, y=80)
-        self.timeLabel = tkinter.Label(self.window, text='00:00:00', bg='#323740', fg='pink', font=("Ariel", 12))
+        self.timeLabel = tkinter.Label(self.window, text='00:00:00', bg='#323740', fg='pink', font=fnt)
         self.timeLabel.place(x=580, y=80)
 
         self.musicScrubber.bind('<ButtonRelease-1>', lambda x: self.set_scrubber(self.musicScrubber.get()))
