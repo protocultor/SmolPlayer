@@ -1,28 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
+import pafy
+import tkinter
 import threading
 import time
 import codecs
 import sys
 import os
-
-try:
-    from vlc import Instance, State
-except OSError:
-    messagebox.showwarning(title='Missing Requirements',
-                           message="This application requires VLC to run. Please install VLC and try again.")
-    sys.exit()
-import tkinter
 from random import shuffle
 from os import chdir, getcwd
+from vlc import Instance, State
 from tkinter import messagebox, font
 from requests import get
 from bs4 import BeautifulSoup
-import webbrowser
-import pafy
-
 
 class SmolPlayer:
     def __init__(self, window):
@@ -180,15 +171,7 @@ class SmolPlayer:
             except Exception as error:
                 if self.threadLock.locked():
                     self.threadLock.release()
-                if 'ssl' and 'SSL' in str(error):
-                    messagebox.showwarning(title="Python Needs to Be Installed",
-                                           message="Because of SSL security issues, you need to install Python on your Mac if you want to use this app.")
-                    if messagebox.askokcancel("Install Python", "Would you like to install Python now?"):
-                        messagebox.showinfo("Update Certificates",
-                                            "After installing python, go to https://stackoverflow.com/questions/42098126 to figure out to fix the certificates.")
-                        webbrowser.open("https://www.python.org/ftp/python/3.7.7/python-3.7.7-macosx10.9.pkg")
-                else:
-                    messagebox.showwarning(title='Warning', message=error)
+                messagebox.showwarning(title='Warning', message=error)
                 self.update()
                 self.play()
         else:
