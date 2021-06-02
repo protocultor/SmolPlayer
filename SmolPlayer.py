@@ -25,7 +25,7 @@ import pafy
 
 
 class SmolPlayer:
-    def __init__(self):
+    def __init__(self, window):
         directory = getcwd()
         chdir(directory)
         self.ticker = 0
@@ -36,7 +36,7 @@ class SmolPlayer:
         self.volume = 42
         self.run = True
         self.threadLock = threading.Lock()
-        self.window = tkinter.Tk()
+        self.window = window
         self.window.title('SmolPlayer')
         self.window.configure(background='#323740')
         self.width, self.height = self.window.winfo_screenwidth(), self.window.winfo_screenheight()
@@ -172,7 +172,8 @@ class SmolPlayer:
                 self.player.stop()
                 self.play()
             except Exception as error:
-                self.threadLock.release()
+                if self.threadLock.locked():
+                    self.threadLock.release()
                 if 'ssl' and 'SSL' in str(error):
                     messagebox.showwarning(title="Python Needs to Be Installed",
                                            message="Because of SSL security issues, you need to install Python on your Mac if you want to use this app.")
@@ -205,6 +206,8 @@ class SmolPlayer:
         with open('urllist.txt', 'r', encoding='utf-8') as f:
             urls = f.readlines()
         combined = list(zip(songs, urls))
+        if not combined:
+            return
         shuffle(combined)
         songs[:], urls[:] = zip(*combined)
         with open('songlist.txt', 'w', encoding='utf-8') as f:
@@ -222,15 +225,11 @@ class SmolPlayer:
             self.playButton.config(state='normal')
             self.pauseButton.place_forget()
             self.playButton.place(x=300, y=10)
-        else:
-            pass
 
     def set_volume(self, amount):
-        try:
+        if self.player:
             self.player.audio_set_volume(int(amount))
             self.volume = amount
-        except:
-            pass
 
     def set_scrubber(self, amount):
         try:
@@ -240,7 +239,8 @@ class SmolPlayer:
             self.musicScrubber.set(0)
 
     def skip(self):
-        self.player.stop()
+        if self.player:
+            self.player.stop()
         self.paused = False
 
     def add(self, event=None):
@@ -289,11 +289,12 @@ class SmolPlayer:
                             f.write(f'{songTitle}\n')
                         self.refresh()
                         break
-                    else:
-                        pass
 
     def up_next(self):
-        index = int(self.queueBox.curselection()[0])
+        selected = self.queueBox.curselection()
+        if len(selected) == 0:
+            return
+        index = int(selected[0])
         with open('songlist.txt', 'r', encoding='utf-8') as f:
             songs = f.readlines()
         with open('urllist.txt', 'r', encoding='utf-8') as f:
@@ -344,6 +345,8 @@ class SmolPlayer:
 
     def delete_song(self, event=None):
         selected = self.queueBox.curselection()
+        if len(selected) == 0:
+            return
         self.queueBox.delete(selected)
         selected = int(selected[0])
         with open("songlist.txt", "r", encoding='utf-8') as f:
@@ -390,8 +393,9 @@ class SmolPlayer:
 
 
 if __name__ == '__main__':
-    if not os.path.exists('songlist.txt'):
-        os.system('touch songlist.txt')
-    if not os.path.exists('urllist.txt'):
-        os.system('touch urllist.txt')
-    SmolPlayer()
+    for filename in ['songlist.txt', 'urllist.txt']:
+        if not os.path.exists(filename):
+            open(filename, 'w').close()
+    mainWindow = tkinter.Tk()
+    SmolPlayer(mainWindow)
+    mainWindow.quit()
