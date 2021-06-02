@@ -1,0 +1,5 @@
+youtube-dl
+requests
+python_vlc
+pafy
+beautifulsoup4
