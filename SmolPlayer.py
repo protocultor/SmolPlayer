@@ -17,6 +17,13 @@ from bs4 import BeautifulSoup
 
 class SmolPlayer:
     def __init__(self, window):
+        self.vlc_opts = '--novideo'
+
+        # Using ALSA if running in Raspberry Pi. Delete these lines if you need PulseAudio.
+        os_data = os.uname()
+        if os_data.sysname == 'Linux' and os_data.machine[:3] == 'arm':
+            self.vlc_opts += ' --aout=alsa'
+
         fnt = ('Ariel', 11)
         for favorite in ['Quicksand Medium', 'DejaVu Sans', 'Dingbats', 'Droid Sans Fallback']:
             if favorite in font.families():
@@ -113,7 +120,7 @@ class SmolPlayer:
                 video = pafy.new(url, ydl_opts=ytdl_opts)
                 best = video.getbest()
                 playurl = best.url
-                vInstance = Instance('--novideo')
+                vInstance = Instance(self.vlc_opts)
                 self.player = vInstance.media_player_new()
                 media = vInstance.media_new(playurl)
                 self.player.set_media(media)
