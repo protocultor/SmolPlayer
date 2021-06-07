@@ -6,6 +6,7 @@ import tkinter
 import threading
 import time
 import codecs
+import json
 import sys
 import os
 from random import shuffle
@@ -269,22 +270,19 @@ class SmolPlayer:
             query = url.replace(' ', '+')
             video = get(f'https://www.youtube.com/results?search_query={query}').text
             soup = BeautifulSoup(video, 'lxml')
-            results = soup.find_all('a', {'class': 'yt-uix-tile-link'})
-            if len(results) == 0:
-                messagebox.showinfo("Couldn't Find Song",
-                                    "SmolPlayer could not find a song matching your query. Try revising your search.")
-            else:
-                for vid in results:
-                    if '/watch' in vid['href']:
-                        url = 'https://www.youtube.com' + vid['href']
-                        songTitle = vid['title']
-                        url = self.check(url)
-                        with open("urllist.txt", "a") as f:
-                            f.write(f'{url}\n')
-                        with open("songlist.txt", "a", encoding='utf-8') as f:
-                            f.write(f'{songTitle}\n')
-                        self.refresh()
-                        break
+            soup_scr = soup.find_all('script', limit=33)
+            json_res = json.loads(soup_scr[32].text[20: -1])
+            results = json_res["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"][
+                "sectionListRenderer"]["contents"][0]["itemSectionRenderer"]["contents"]
+            for elem in results:
+                if "videoRenderer" in elem:
+                    url = 'https://www.youtube.com/watch?v=' + elem["videoRenderer"]["videoId"]
+                    songTitle = elem["videoRenderer"]["title"]["runs"][0]["text"]
+                    with open("urllist.txt", "a") as f:
+                        f.write(f'{url}\n')
+                    with open("songlist.txt", "a", encoding='utf-8') as f:
+                        f.write(f'{songTitle}\n')
+            self.refresh()
 
     def up_next(self):
         selected = self.queueBox.curselection()
